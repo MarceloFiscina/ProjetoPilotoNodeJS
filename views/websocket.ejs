@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <!-- Inclui o head -->
+    {{%- include('./partials/head'); %}}
+</head>
+
+<body>
+
+    <!-- Inclui o arquivo parcial nav, que é a barra de menu superior -->
+    <!-- https://ejs.co/#docs -->
+    {{%- include('./partials/nav'); %}}
+
+    <!-- Inclui o menu lateral... O botão para abrir o menu lateral esta na barra superior (partials/nav) -->
+    {{%- include('./partials/sidenav'); %}}
+
+    <main>
+        <div class="col s12">
+            <h3>Aquisição de dados via websocket</h3>
+        </div>
+
+
+        <div class="row">
+            <div class="col s12 m12">
+                <div id="chart"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Para saber a respeito do NONCE veja o arquivo index.js na linha 17 -->
+
+    <!-- Materialize CSS - https://materializeweb.com/getting-started.html -->
+    <script nonce="{{%= locals.nonce %}}" type="text/javascript" src="/assets/js/materialize.min.js"></script>
+
+    <!-- https://pt.stackoverflow.com/questions/83839/por-que-se-recomenda-colocar-os-c%C3%B3digos-javascript-no-final-do-escopo-da-tag-bod -->
+    <script nonce="{{%= locals.nonce %}}" type="text/javascript">
+        // Script para inicializar a biblioteca javascript do Materialize depois da pagina carregar completamente
+        // https://developer.mozilla.org/pt-BR/docs/Web/API/EventTarget/addEventListener
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // https://materializeweb.com/auto-init.html
+            M.AutoInit();
+        });
+    </script>
+
+    <!-- Apexcharts - https://apexcharts.com/ -->
+    <script nonce="{{%= locals.nonce %}}" src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script nonce="{{%= locals.nonce %}}" type="text/javascript">
+        const options = {
+            series: [{
+                name: "Dados via WS",
+                data: []
+            }],
+            chart: {
+                height: 350,
+                type: 'line',
+                zoom: {
+                    enabled: false
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'straight'
+            },
+            title: {
+                text: 'Dados aleatórios',
+                align: 'left'
+            },
+            grid: {
+                row: {
+                    colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                    opacity: 0.5
+                },
+            }
+        };
+
+        const chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+
+        const ws = new WebSocket('ws://localhost:3000');
+        ws.onerror = function (e) { console.log(e); }
+        ws.onclose = function (e) { console.log(e); }
+        ws.onopen = function () {
+            console.log('connected');
+        }
+        ws.onmessage = function (ms) {
+
+            let dados = JSON.parse(ms.data).map(i => { return { x: new Date(i["x"]).toLocaleString(), y: i["y"] } });
+
+            //console.log(dados);
+
+            chart.updateSeries([{
+                data: dados
+            }])
+        }
+    </script>
+
+</body>
+
+</html>

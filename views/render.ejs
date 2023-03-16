@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <!-- Inclui o head -->
+    {{%- include('./partials/head'); %}}
+</head>
+
+<body>
+
+    <!-- Inclui o arquivo parcial nav, que é a barra de menu superior -->
+    <!-- https://ejs.co/#docs -->
+    {{%- include('./partials/nav'); %}}
+
+    <!-- Inclui o menu lateral... O botão para abrir o menu lateral esta na barra superior (partials/nav) -->
+    {{%- include('./partials/sidenav'); %}}
+
+    <main>
+
+        <!-- trabalhando com a parte de render EJS -->
+        <div class="row">
+            <div class="col s12">
+                <h3>{{%= dados_render.title %}}</h3>
+            </div>
+            <div class="col s12 m4">
+                <h5>Exibe os itens da array vindo do render passado pelo controller</h5>
+                <ul class="collection">
+                    <!-- Exibe os itens da array vindo do render passado pelo controller -->
+                    {{% for(let item of dados_render.array){ %}}
+                    <li class="collection-item">{{%= item %}}</li>
+                    {{% } %}}
+                </ul>
+            </div>
+            <div class="col s12 m4">
+                <h5>Exibe os itens do objeto vindo do render passado pelo controller</h5>
+                <ul class="collection">
+                    <!-- Exibe os itens do objeto vindo do render passado pelo controller -->
+                    {{% for(let key of Object.keys(dados_render.object)){ %}}
+                    <li class="collection-item">{{%= key %}} = {{%= dados_render.object[key] %}}</li>
+                    {{% } %}}
+                </ul>
+            </div>
+            <div class="col s12 m4">
+                <h5>Exibe a variável home vindo do render passado pelo controller</h5>
+                <!-- Exibe a variavel home vindo do render passado pelo controller -->
+                <p class="">{{%= JSON.stringify(dados_render) %}}</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Inclui o arquivo parcial footer, que é o rodapé do site -->
+    <!-- https://ejs.co/#docs -->
+    {{%- include('./partials/footer'); %}}
+
+    <!-- Para saber a respeito do NONCE veja o arquivo index.js na linha 17 -->
+
+    <!-- Materialize CSS - https://materializeweb.com/getting-started.html -->
+    <script nonce="{{%= locals.nonce %}}" type="text/javascript" src="/assets/js/materialize.min.js"></script>
+
+    <!-- https://pt.stackoverflow.com/questions/83839/por-que-se-recomenda-colocar-os-c%C3%B3digos-javascript-no-final-do-escopo-da-tag-bod -->
+    <script nonce="{{%= locals.nonce %}}" type="text/javascript">
+        // Script para inicializar a biblioteca javascript do Materialize depois da pagina carregar completamente
+        // https://developer.mozilla.org/pt-BR/docs/Web/API/EventTarget/addEventListener
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // https://materializeweb.com/auto-init.html
+            M.AutoInit();
+        });
+    </script>
+</body>
+
+</html>
